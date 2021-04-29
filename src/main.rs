@@ -1,4 +1,3 @@
-use rand::prelude::*;
 use std::os::unix::fs::OpenOptionsExt;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
@@ -10,7 +9,6 @@ pub struct Aligned([u8; 4096]);
 
 #[tokio::main]
 async fn main() {
-    femme::with_level(femme::LevelFilter::Trace);
     let path = NamedTempFile::new().unwrap().into_temp_path();
     let heap_file = std::fs::OpenOptions::new()
         .read(true)
@@ -31,7 +29,7 @@ async fn main() {
             let ring = ring.clone();
 
             tokio::spawn(async move {
-                for _ in 0..1 {
+                for _ in 0..16 {
                     let pos = counter.fetch_add(1, Ordering::Relaxed);
                     let at = pos * 4096;
                     let page = Aligned([0; 4096]);
